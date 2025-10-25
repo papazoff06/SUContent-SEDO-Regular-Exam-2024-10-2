@@ -1,7 +1,5 @@
 pipeline {
-    agent {
-        label 'windows'   // Ensure this runs on a Windows Jenkins agent
-    }
+    agent any
 
     stages {
         stage('Checkout') {
