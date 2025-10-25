@@ -1,39 +1,27 @@
 pipeline {
-    agent any
+    agent any   // or use label 'windows' if you have a Windows agent
 
     stages {
         stage('Checkout') {
+            when { branch 'feature-ci-pipeline' }
             steps {
                 checkout scm
             }
         }
 
         stage('Restore & Build') {
+            when { branch 'feature-ci-pipeline' }
             steps {
                 bat 'dotnet restore'
                 bat 'dotnet build --no-restore'
             }
         }
 
-        stage('Run Tests') {
+        stage('Run All Tests') {
+            when { branch 'feature-ci-pipeline' }
             steps {
-                script {
-                    if (env.BRANCH_NAME == 'develop') {
-                        echo "Running Unit Tests Only..."
-                        bat 'dotnet test --no-build --filter TestCategory=Unit'
-                    } 
-                    else if (env.BRANCH_NAME == 'staging') {
-                        echo "Running Integration Tests Only..."
-                        bat 'dotnet test --no-build --filter TestCategory=Integration'
-                    }
-                    else if (env.BRANCH_NAME == 'feature-ci-pipeline') {
-                        echo "Running All Tests..."
-                        bat 'dotnet test --no-build --verbosity normal'
-                    } 
-                    else {
-                        echo "No tests configured for this branch."
-                    }
-                }
+                echo "Running all tests on feature-ci-pipeline branch..."
+                bat 'dotnet test --no-build --verbosity normal'
             }
         }
     }
